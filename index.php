@@ -180,7 +180,7 @@ session_start();
         <a href="#">FAQs</a>
         <a href="#">Privacy</a>
         <a href="#">Terms of Use</a>
-        <a href="/add_car.php">Admin Login</a>
+        <a href="/admin_register.php">Admin Login</a>
     </div>
     <div class="subscribe">
         <h3>Subscribe Newsletter</h3>

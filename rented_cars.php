@@ -74,9 +74,17 @@ $conn->close();
     </script>
 </head>
 <body>
-
+<nav>
+    <a href="index.php">Home</a>
+    <a href="#">Cars</a>
+    <a href="rented_cars.php">View Rented Cars</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
+</nav>
 <header>
+
     <h1>Your Rented Cars</h1>
+
 </header>
 
 <div class="rented-cars">
@@ -101,8 +109,10 @@ $conn->close();
 </div>
 
 <style>
+    
     .rented-cars {
         display: flex;
+        justify-content: center;
         flex-direction: column;
         gap: 20px;
     }
@@ -123,6 +133,21 @@ $conn->close();
         margin-left: 20px; /* Space between the info and the image */
     }
 </style>
-
+<footer>
+    <div class="footer-links">
+        <a href="#">About Us</a>
+        <a href="#">FAQs</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms of Use</a>
+        <a href="/add_car.php">Admin Login</a>
+    </div>
+    <div class="subscribe">
+        <h3>Subscribe Newsletter</h3>
+        <p>Enter Email Address</p>
+        <input type="email" placeholder="Your Email Address">
+        <button>Subscribe</button>
+        <p>*We send great deals and the latest auto news to our subscribed users every week.</p>
+    </div>
+</footer>
 </body>
 </html>
