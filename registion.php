@@ -21,9 +21,10 @@
 
     <nav>
         <a href="index.php">Home</a>
-        <a href="#">Cars</a>
-        <a href="#">About Us</a>
-        <a href="#">Contact</a>
+        <a href="/cars.php">Cars</a>
+        <a href="rented_cars.php">View Rented Cars</a>
+        <a href="/about.php">About Us</a>
+        <a href="/contact.php">Contact</a>
     </nav>
     <div class="background">
         <form action="/register_process.php" method="POST">

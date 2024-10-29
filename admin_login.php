@@ -1,10 +1,43 @@
 <?php
-// Database connection
+session_start();
 include 'db.php';
 
-// Start session
-session_start();
+$message = '';
+
+if (isset($_POST['login'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Query to check if the email exists
+    $query = "SELECT admin_id, admin_name, password FROM admin_user WHERE email = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    // Check if a user with this email exists
+    if ($stmt->num_rows > 0) {
+        $stmt->bind_result($admin_id, $admin_name, $hashed_password);
+        $stmt->fetch();
+
+        // Verify password
+        if (password_verify($password, $hashed_password)) {
+            // Successful login
+            $_SESSION['admin_id'] = $admin_id;
+            $_SESSION['admin_name'] = $admin_name;
+            header("Location: admin.php");
+            exit();
+        } else {
+            // Incorrect password
+            $message = "Incorrect password. Please try again.";
+        }
+    } else {
+        // Email does not exist
+        $message = "No account found with that email.";
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +58,7 @@ session_start();
             border: none;
             cursor: pointer;
             margin-top: 10px;
+            border-radius: 25px;
         }
 
         button:hover {
@@ -72,6 +106,26 @@ session_start();
             text-align: center;
             padding: 100px;
         }
+        form a, h1, button{
+            color: white;
+            text-decoration: none;
+            background-color: #f02d2ded;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+        .notification {
+            color: green; 
+            font-size: 14px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background-color: white;
+            /* Transition effect for notification */
+            transition: background-color 0.3s ease-in-out;
+        }
+
     </style>
 </head>
 
@@ -87,15 +141,19 @@ session_start();
 </nav>
 
 <div class="cover">
-
-<form action="admin_login.php" method="POST">
-    <h1 style="color:palegreen">Admin Login</h1>
-    <input type="email" name="email" placeholder="Email" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit" name="login">Login</button>
-</form>
-
+    <form action="add_car.php" method="POST">
+        <h1>Admin Login</h1>
+        <?php if ($message): ?>
+            <p class="notification"><?php echo $message; ?></p>
+        <?php endif; ?>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" name="login">Login</button>
+        <a href="/forgot_password.php">Forgot Password?</a>
+    </form>
 </div>
+
+
 
 <div class="website-title">
     <p class="t"><span class="title">Find the Best</span> Car For You</p> </br>

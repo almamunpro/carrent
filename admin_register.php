@@ -1,9 +1,43 @@
 <?php
-// Database connection
 include 'db.php';
 
-// Start session
-session_start();
+$message = '';
+
+if (isset($_POST['register'])) {
+    $admin_name = $_POST['admin_name'];
+    $email = $_POST['email'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $secret_code = $_POST['secret_code'];
+
+    // Secret code validation
+    $correct_secret_code = "car#24";
+    
+    if ($secret_code === $correct_secret_code) {
+        // Check if email already exists
+        $email_check_query = "SELECT email FROM admin_user WHERE email = ?";
+        $stmt = $conn->prepare($email_check_query);
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        
+        if ($stmt->num_rows > 0) {
+            $message = "This email is already registered. Please use a different email.";
+        } else {
+            // Proceed with registration
+            $query = "INSERT INTO admin_user (admin_name, email, password) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("sss", $admin_name, $email, $password);
+
+            if ($stmt->execute()) {
+                $message = "Registration successful. You can now log in.";
+            } else {
+                $message = "Error: " . $stmt->error;
+            }
+        }
+    } else {
+        $message = "Incorrect secret code. Registration denied.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -15,8 +49,14 @@ session_start();
     <title>Car Rental Service</title>
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* Simple grid layout for car section */
-        
+
+        .notification {
+    color: green; /* or green for success messages */
+    font-size: 16px;
+    margin-bottom: 10px;
+    background-color: aliceblue;
+    padding: 10px;
+}
 
         button {
             background-color: #3498db;
@@ -86,14 +126,17 @@ session_start();
 
 <nav>
     <a href="index.php">Home</a>
-    <a href="#">Cars</a>
+    <a href="/cars.php">Cars</a>
     <a href="rented_cars.php">View Rented Cars</a>
-    <a href="#">About Us</a>
-    <a href="#">Contact</a>
+    <a href="/about.php">About Us</a>
+    <a href="/contact.php">Contact</a>
 </nav>
 
 <div class="cover">
     <form action="admin_register.php" method="POST">
+        <?php if ($message): ?>
+            <p class="notification"><?php echo $message; ?></p>
+        <?php endif; ?>
         <input type="text" name="admin_name" placeholder="Admin Name" required>
         <input type="email" name="email" placeholder="Email" required>
         <input type="password" name="password" placeholder="Password" required>
@@ -102,6 +145,7 @@ session_start();
         <a href="/admin_login.php">Login</a>
     </form>
 </div>
+
 
 <div class="website-title">
     <p class="t"><span class="title">Find the Best</span> Car For You</p> </br>
@@ -116,7 +160,6 @@ session_start();
         <a href="#">FAQs</a>
         <a href="#">Privacy</a>
         <a href="#">Terms of Use</a>
-        <a href="/add_car.php">Admin Login</a>
     </div>
     <div class="subscribe">
         <h3>Subscribe Newsletter</h3>

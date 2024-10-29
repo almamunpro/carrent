@@ -3,11 +3,7 @@
 include 'db.php';
 session_start();
 
-// Check if the user is logged in
-if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
-    exit;
-}
+
 
 // Get the current logged-in user's ID
 $email = $_SESSION['username'];
@@ -23,10 +19,10 @@ if (!$user_id) {
     die("User not found");
 }
 
-// Fetch rented cars for the user, including the image path
-$sql = "SELECT b.car_id, b.booking_date, b.return_date, b.total_amount, 
+// Fetch rented cars for the user, including the image path and status
+$sql = "SELECT b.car_id, b.booking_date, b.return_date, b.total_amount, b.status,
                c.name, c.model, c.fuel_type, c.seats, 
-               c.image_path /* Adjust to retrieve the actual image path from the cars table */
+               c.image_path
         FROM bookings b 
         JOIN cars c ON b.car_id = c.id 
         WHERE b.user_id = ?";
@@ -46,8 +42,17 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rented Cars</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .active {
+            color: white;
+            border: 2px solid white;
+            padding: 15px;
+            background-color: #333;
+            margin-right: 10px;
+        }
+    </style>
     <script>
-        function startCountdown(returnDate) {
+        function startCountdown(returnDate, elementId) {
             const returnTime = new Date(returnDate).getTime();
 
             const countdownInterval = setInterval(() => {
@@ -61,30 +66,50 @@ $conn->close();
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                 // Display the result
-                document.getElementById("countdown").innerHTML = 
+                document.getElementById(elementId).innerHTML = 
                     `${days}d ${hours}h ${minutes}m ${seconds}s`;
 
-                // If the countdown is over, refresh the page
+                // If the countdown is over, clear the interval
                 if (distance < 0) {
                     clearInterval(countdownInterval);
-                    location.reload(); // Reload the page
+                    document.getElementById(elementId).innerHTML = "Expired";
                 }
             }, 1000);
         }
     </script>
 </head>
 <body>
+<header>
+    <div class="logo"><img class="carlogo" src="/images/logo.png" alt="car logo"></div>
+    <div class="contact">
+        <p><span class="bold">Support Mail us :</span> 
+        <p>info@gmail.com</p>
+    </div>
+    <div class="auth-buttons">
+        <?php
+        if (isset($_SESSION['username'])) {
+            echo '<div class="profile-section">';
+            echo '<img src="/images/cat-profile.png" alt="Profile" class="profile-circle">';
+            echo '<span class="username">' . htmlspecialchars($_SESSION['username']) . '</span>';
+            echo '<a href="/logout.php" class="logout-btn">Logout</a>';
+            echo '</div>';
+        } else {
+            echo '<a href="/login.php">Login</a>';
+            echo '<a href="/register.php">Register</a>';
+        }
+        ?>
+    </div>
+</header>
 <nav>
     <a href="index.php">Home</a>
-    <a href="#">Cars</a>
-    <a href="rented_cars.php">View Rented Cars</a>
-    <a href="#">About Us</a>
-    <a href="#">Contact</a>
+    <a href="/cars.php">Cars</a>
+    <a class="active" href="rented_cars.php">View Rented Cars</a>
+    <a href="/about.php">About Us</a>
+    <a href="/contact.php">Contact</a>
 </nav>
+
 <header>
-
     <h1>Your Rented Cars</h1>
-
 </header>
 
 <div class="rented-cars">
@@ -95,11 +120,16 @@ $conn->close();
                 <p><strong>Fuel Type:</strong> <?php echo htmlspecialchars($car['fuel_type']); ?></p>
                 <p><strong>Seats:</strong> <?php echo htmlspecialchars($car['seats']); ?></p>
                 <p><strong>Total Amount:</strong> $<?php echo htmlspecialchars($car['total_amount']); ?></p>
+                <p><strong>Status:</strong> <?php echo htmlspecialchars($car['status']); ?></p>
                 <p><strong>Return Date:</strong> <span id="return-date-<?php echo $car['car_id']; ?>"><?php echo htmlspecialchars($car['return_date']); ?></span></p>
-                <p><strong>Time Left:</strong> <span id="countdown"></span></p>
-                <script>
-                    startCountdown("<?php echo $car['return_date']; ?>T23:59:59");
-                </script>
+                <p><strong>Time Left:</strong> <span id="countdown-<?php echo $car['car_id']; ?>">
+                    <?php echo $car['status'] === 'Active' ? '' : 'Inactive'; ?>
+                </span></p>
+                <?php if ($car['status'] === 'Active'): ?>
+                    <script>
+                        startCountdown("<?php echo $car['return_date']; ?>T23:59:59", "countdown-<?php echo $car['car_id']; ?>");
+                    </script>
+                <?php endif; ?>
             </div>
             <div class="car-image">
                 <img src="<?php echo htmlspecialchars($car['image_path']); ?>" alt="<?php echo htmlspecialchars($car['name']); ?>" style="width: 200px; height: auto;">
@@ -109,7 +139,6 @@ $conn->close();
 </div>
 
 <style>
-    
     .rented-cars {
         display: flex;
         justify-content: center;
@@ -119,20 +148,21 @@ $conn->close();
 
     .car-details {
         display: flex;
-        justify-content: space-between; /* Aligns car info and image */
+        justify-content: space-between;
         border: 1px solid #ccc;
         padding: 10px;
         border-radius: 5px;
     }
 
     .car-info {
-        flex: 1; /* Allows this div to take available space */
+        flex: 1;
     }
 
     .car-image {
-        margin-left: 20px; /* Space between the info and the image */
+        margin-left: 20px;
     }
 </style>
+
 <footer>
     <div class="footer-links">
         <a href="#">About Us</a>

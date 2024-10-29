@@ -64,7 +64,7 @@ session_start();
         /* Additional styling for header */
         header {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
             padding: 20px;
             background-color: #333;
@@ -90,45 +90,59 @@ session_start();
             max-width: 50px;
             margin-right: 10px;
         }
-        .active{
-            color: white;
-            border: 2px solid white;
-            padding: 15px;
-            background-color: #333;
-            margin-right: 10px;
-        }
+        .user-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        text-align: center;
+    }
+
+    .user-info a {
+        background: white;
+        font-size: 20px;
+        padding: 10px;
+        border-radius: 15px;
+        text-decoration: none;
+    }
+
+    .user-info a:hover {
+        background: white;
+        padding: 10px;
+        border-radius: 15px;
+    }
+
     </style>
 </head>
 
 <body>
 <header>
-    <div class="logo"><img class="carlogo" src="/images/logo.png" alt="car logo"></div>
+    <div class="logo">
+        <img class="carlogo" src="/images/logo.png" alt="car logo">
+    </div>
+    <div class="user-info">
+        <?php if (isset($_SESSION['admin_name'])): ?>
+            <p>Welcome, <?php echo htmlspecialchars($_SESSION['admin_name']); ?>!</p>
+            <a href="admin_logout.php">Logout</a>
+        <?php else: ?>
+            <a href="admin_login.php">Login</a>
+        <?php endif; ?>
+    </div>
     <div class="contact">
-        <p><span class="bold">Support Mail us :</span> 
+        <p><span class="bold">Support Mail us :</span> </p>
         <p>info@gmail.com</p>
     </div>
-    <div class="auth-buttons">
-        <?php
-        if (isset($_SESSION['username'])) {
-            echo '<div class="profile-section">';
-            echo '<img src="/images/cat-profile.png" alt="Profile" class="profile-circle">';
-            echo '<span class="username">' . htmlspecialchars($_SESSION['username']) . '</span>';
-            echo '<a href="/logout.php" class="logout-btn">Logout</a>';
-            echo '</div>';
-        } else {
-            echo '<a href="/login.php">Login</a>';
-            echo '<a href="/registion.php">Register</a>';
-        }
-        ?>
-    </div>
+    
 </header>
 
+
 <nav>
-    <a class="active" href="index.php">Home</a>
-    <a href="/cars.php">Cars</a>
+    <a href="index.php">Home</a>
+    <a href="#">available Cars</a>
     <a href="rented_cars.php">View Rented Cars</a>
-    <a href="/about.php">About Us</a>
-    <a href="/contact.php">Contact</a>
+    <a href="#">About Us</a>
+    <a href="#">Contact</a>
 </nav>
 
 <div class="cover"></div>

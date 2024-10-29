@@ -16,6 +16,8 @@ session_start();
     <link rel="stylesheet" href="/css/style.css">
     <style>
         
+        
+
         /* Additional styling for header */
         header {
             display: flex;
@@ -83,13 +85,6 @@ session_start();
             color: aliceblue;
             width: 50%;
         }
-        .active{
-            color: white;
-            border: 2px solid white;
-            padding: 15px;
-            background-color: #333;
-            margin-right: 10px;
-        }
     </style>
 </head>
 
@@ -120,7 +115,7 @@ session_start();
     <a href="index.php">Home</a>
     <a href="/cars.php">Cars</a>
     <a href="rented_cars.php">View Rented Cars</a>
-    <a class="active" href="/about.php">About Us</a>
+    <a href="/about.php">About Us</a>
     <a href="/contact.php">Contact</a>
 </nav>
 

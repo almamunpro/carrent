@@ -19,12 +19,13 @@
         </div>
     </header>
 
-    <nav>
-        <a href="index.php">Home</a>
-        <a href="#">Cars</a>
-        <a href="#">About Us</a>
-        <a href="#">Contact</a>
-    </nav>
+<nav>
+    <a href="index.php">Home</a>
+    <a href="/cars.php">Cars</a>
+    <a href="rented_cars.php">View Rented Cars</a>
+    <a href="/about.php">About Us</a>
+    <a href="/contact.php">Contact</a>
+</nav>
     <div class="background">
         <form action="login_process.php" method="post">
             <h2>Login</h2>
@@ -38,6 +39,13 @@
             <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Password" required>
             <input type="submit" value="Login"> <a href=""></a>
+            <p>
+                <a>
+                    Forgot Password?
+                    <a href="forgot_password.php">Reset Password</a>
+                </a>
+                </a>
+            </p>
         </form>
     </div>
     <footer>
